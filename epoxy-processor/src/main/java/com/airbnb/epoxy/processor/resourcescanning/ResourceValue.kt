@@ -4,12 +4,6 @@ import com.airbnb.epoxy.processor.ClassNames.ANDROID_R
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock
 
-/**
- * Represents a resource used as an annotation parameter.
- *
- *
- * Inspired by Butterknife. https://github.com/JakeWharton/butterknife/pull/613
- */
 class ResourceValue {
 
     val className: ClassName?
@@ -17,7 +11,7 @@ class ResourceValue {
     val value: Int
     val code: CodeBlock
     val qualified: Boolean
-    val resourceType: String? get() = className?.simpleName()
+    private val resourceType: String? get() = className?.simpleName()
     val rClass: ClassName? get() = className?.topLevelClassName()
 
     constructor(value: Int) {
@@ -28,9 +22,6 @@ class ResourceValue {
         className = null
     }
 
-    /**
-     * @param className eg com.airbnb.epoxy.R.layout
-     */
     constructor(
         className: ClassName,
         resourceName: String,
@@ -53,9 +44,7 @@ class ResourceValue {
         other as ResourceValue
 
         if (value != other.value) return false
-        if (code != other.code) return false
-
-        return true
+        return code == other.code
     }
 
     override fun hashCode(): Int {

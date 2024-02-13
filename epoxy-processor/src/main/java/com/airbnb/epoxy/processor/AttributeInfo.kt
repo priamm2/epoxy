@@ -37,11 +37,6 @@ abstract class AttributeInfo(val memoizer: Memoizer) : Comparable<AttributeInfo>
             if (field) {
                 return true
             }
-
-            // Do not include Kotlin lambdas in toString because there is a bug where they sometimes
-            // crash.
-            // see https://github.com/airbnb/epoxy/issues/455
-            // Avoid type lookup as it is expensive in KSP, so just check for the functions package.
             return "kotlin.jvm.functions" in typeName.toString()
         }
 
@@ -60,40 +55,20 @@ abstract class AttributeInfo(val memoizer: Memoizer) : Comparable<AttributeInfo>
     var javaDoc: CodeBlock? = null
         protected set
 
-    /** If this attribute is in an attribute group this is the name of the group.  */
     var groupKey: String? = null
 
-    /**
-     * Track whether there is a setter method for this attribute on a super class so that we can
-     * call through to super.
-     */
     var hasSuperSetter: Boolean = false
 
-    // for private fields (Kotlin case)
     var isPrivate: Boolean = false
     protected var getterMethodName: String? = null
 
     protected var setterMethodName: String? = null
 
-    /**
-     * True if this attribute is completely generated as a field on the generated model. False if it
-     * exists as a user defined attribute in a model super class.
-     */
     var isGenerated: Boolean = false
         protected set
 
-    /** If [.isGenerated] is true, a default value for the field can be set here.  */
     val codeToSetDefault = DefaultValue()
 
-    /**
-     * If [isGenerated] is true, this represents whether null is a valid value to set on the
-     * attribute. If this is true, then the [codeToSetDefault] should be null unless a
-     * different default value is explicitly set.
-     *
-     *
-     * This is Boolean to have null represent that nullability was not explicitly set, eg for
-     * primitives or legacy attributes that weren't made with nullability support in mind.
-     */
     var isNullable: Boolean? = null
         protected set(value) {
             check(!isPrimitive) {
@@ -149,13 +124,7 @@ abstract class AttributeInfo(val memoizer: Memoizer) : Comparable<AttributeInfo>
     }
 
     class DefaultValue {
-        /** An explicitly defined default via the default param in the prop annotation.  */
         var explicit: CodeBlock? = null
-
-        /**
-         * An implicitly assumed default, either via an @Nullable annotation or a primitive's default
-         * value. This is overridden if an explicit value is set.
-         */
         var implicit: CodeBlock? = null
 
         val isPresent: Boolean
@@ -184,7 +153,6 @@ abstract class AttributeInfo(val memoizer: Memoizer) : Comparable<AttributeInfo>
 
     fun getterCode(): String = if (isPrivate) getterMethodName!! + "()" else fieldName
 
-    // Special case to avoid generating recursive getter if field and its getter names are the same
     fun superGetterCode(): String =
         if (isPrivate) String.format("super.%s()", getterMethodName) else fieldName
 
@@ -231,8 +199,6 @@ abstract class AttributeInfo(val memoizer: Memoizer) : Comparable<AttributeInfo>
     }
 
     override fun compareTo(other: AttributeInfo): Int {
-        // sort attributes alphabetically for consistent code generation when attributes
-        // are added concurrently.
         return fieldName.compareTo(other.fieldName)
     }
 }

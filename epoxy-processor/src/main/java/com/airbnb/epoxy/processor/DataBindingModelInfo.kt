@@ -38,14 +38,7 @@ internal class DataBindingModelInfo(
         collectMethodsReturningClassType(superClassElement)
     }
 
-    /**
-     * Look up the DataBinding class generated for this model's layout file and parse the attributes
-     * for it.
-     * @return the databinding element if it was successfully parsed, null otherwise.
-     */
     fun parseDataBindingClass(logger: Logger): XTypeElement? {
-        // This databinding class won't exist until the second round of annotation processing since
-        // it is generated in the first round.
         val dataBindingClassElement = this.dataBindingClassElement ?: return null
         val hashCodeValidator = HashCodeValidator(memoizer.environment, memoizer, logger)
 
@@ -87,8 +80,6 @@ internal class DataBindingModelInfo(
         const val BINDING_SUFFIX = "Binding"
 
         val FIELD_NAME_BLACKLIST = listOf(
-            // Starting with Android plugin 3.1.0 nested DataBinding classes have a
-            // "setLifecycleOwner" method
             "lifecycleOwner"
         )
     }

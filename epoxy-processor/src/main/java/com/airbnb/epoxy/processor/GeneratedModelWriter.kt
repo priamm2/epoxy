@@ -266,7 +266,7 @@ class GeneratedModelWriter(
         if (shouldUseBitSet(classInfo)) {
             fields.add(
                 buildField(BitSet::class.className(), ATTRIBUTES_BITSET_FIELD_NAME) {
-                    addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                    addModifiers(Modifier.PRIVATE, FINAL)
                     initializer(
                         "new \$T(\$L)", BitSet::class.java,
                         classInfo.attributeInfo.size
@@ -456,7 +456,7 @@ class GeneratedModelWriter(
             buildMethod("getViewType") {
                 addAnnotation(Override::class.java)
                 addModifiers(PROTECTED)
-                returns(TypeName.INT)
+                returns(INT)
                 addStatement("return 0", modelInfo.modelType)
             }
         )
@@ -606,7 +606,7 @@ class GeneratedModelWriter(
             addModifiers(PUBLIC)
             addAnnotation(Override::class.java)
             addParameter(boundObjectParam)
-            addParameter(TypeName.INT, "position")
+            addParameter(INT, "position")
 
             if (modelInfo.isSuperClassAlsoGenerated) {
                 // If a super class is also generated we need to make sure to call through to these
@@ -741,7 +741,7 @@ class GeneratedModelWriter(
     ) = buildMethod("onVisibilityStateChanged") {
         addAnnotation(Override::class.java)
         addModifiers(PUBLIC)
-        addParameter(TypeName.INT, "visibilityState")
+        addParameter(INT, "visibilityState")
         addParameter(visibilityObjectParam)
 
         beginControlFlow("if (\$L != null)", modelVisibilityStateChangedListenerFieldName())
@@ -771,8 +771,8 @@ class GeneratedModelWriter(
         addModifiers(PUBLIC)
         addParameter(TypeName.FLOAT, "percentVisibleHeight")
         addParameter(TypeName.FLOAT, "percentVisibleWidth")
-        addParameter(TypeName.INT, "visibleHeight")
-        addParameter(TypeName.INT, "visibleWidth")
+        addParameter(INT, "visibleHeight")
+        addParameter(INT, "visibleWidth")
         addParameter(visibilityObjectParam)
 
         beginControlFlow("if (\$L != null)", modelVisibilityChangedListenerFieldName())
@@ -868,7 +868,7 @@ class GeneratedModelWriter(
             .addAnnotation(Override::class.java)
             .addParameter(viewHolderParam)
             .addParameter(boundObjectParam)
-            .addParameter(TypeName.INT, positionParamName, Modifier.FINAL)
+            .addParameter(INT, positionParamName, FINAL)
 
         if (modelInfo.isSuperClassAlsoGenerated) {
             // If a super class is also generated we need to make sure to call through to these
@@ -1029,7 +1029,7 @@ class GeneratedModelWriter(
             val isLayoutUnsupportedOverload = info.isProgrammaticView &&
                 "layout" == methodInfo.name &&
                 methodInfo.params.size == 1 &&
-                methodInfo.params[0].type === TypeName.INT
+                methodInfo.params[0].type === INT
 
             if (isLayoutUnsupportedOverload) {
                 builder.addStatement(
@@ -1163,7 +1163,7 @@ class GeneratedModelWriter(
             .addAnnotation(Override::class.java)
             .addAnnotation(LayoutRes::class.java)
             .addModifiers(Modifier.PROTECTED)
-            .returns(TypeName.INT)
+            .returns(INT)
             .build()
     }
 
@@ -1540,7 +1540,7 @@ class GeneratedModelWriter(
     private fun generateHashCode(helperClass: GeneratedModelInfo) = buildMethod("hashCode") {
         addAnnotation(Override::class.java)
         addModifiers(PUBLIC)
-        returns(TypeName.INT)
+        returns(INT)
         addStatement("int $HASH_CODE_RESULT_PROPERTY = super.hashCode()")
 
         addHashCodeLineForType(

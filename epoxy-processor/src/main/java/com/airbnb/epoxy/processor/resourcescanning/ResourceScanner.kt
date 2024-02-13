@@ -13,16 +13,11 @@ abstract class ResourceScanner(val environmentProvider: () -> XProcessingEnv) {
 
     private val mutableRClasses = mutableSetOf<ClassName>()
 
-    /**
-     * Returns the [ResourceValue] that is used as an annotation value of the given [XElement]
-     */
     fun getResourceValue(
         annotation: KClass<out Annotation>,
         element: XElement,
         property: String,
     ): ResourceValue? {
-        // The annotation box class doesn't allow us to query properties by name, so we get an
-        // XAnnotation which has that information.
         val xAnnotation = element.getXAnnotation(annotation) ?: return null
 
         val value = (
@@ -39,14 +34,10 @@ abstract class ResourceScanner(val environmentProvider: () -> XProcessingEnv) {
         annotation: KClass<out Annotation>
     ): XAnnotation? {
         return getAllAnnotations().firstOrNull {
-            // optimization to not resolve full annotation for fqn unless the simple name matches
             it.name == annotation.simpleName && it.qualifiedName == annotation.qualifiedName
         }
     }
 
-    /**
-     * Returns the [ResourceValue] that is used as an annotation value of the given [XElement]
-     */
     fun getResourceValue(
         annotation: KClass<out Annotation>,
         element: XElement,
@@ -58,9 +49,6 @@ abstract class ResourceScanner(val environmentProvider: () -> XProcessingEnv) {
         } ?: ResourceValue(value)
     }
 
-    /**
-     * Returns the list of [ResourceValue] that is used as an annotation value of the given [XElement]
-     */
     fun getResourceValueList(
         annotation: KClass<out Annotation>,
         element: XElement,
@@ -96,9 +84,6 @@ abstract class ResourceScanner(val environmentProvider: () -> XProcessingEnv) {
         value: Int
     ): ResourceValue?
 
-    /**
-     * Returns a list of layout resources whose name contains the given layout as a prefix.
-     */
     fun getAlternateLayouts(layout: ResourceValue): List<ResourceValue> {
         val layoutClassName = layout.className ?: return emptyList()
 
@@ -116,7 +101,7 @@ abstract class ResourceScanner(val environmentProvider: () -> XProcessingEnv) {
                 ResourceValue(
                     layout.className,
                     it,
-                    value = 0 // Don't care about this for our use case
+                    value = 0
                 )
             }
     }

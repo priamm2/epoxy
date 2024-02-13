@@ -39,7 +39,7 @@ private fun String.transformEachChar(
 ): String {
     val stringBuilder = StringBuilder(length)
 
-    for (i in 0 until length) {
+    for (i in indices) {
         stringBuilder.operation(getOrNull(i - 1), get(i), getOrNull(i))
     }
 

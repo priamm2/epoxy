@@ -32,9 +32,7 @@ class JavacResourceScanner(
             Trees.instance(processingEnv)
         } catch (ignored: IllegalArgumentException) {
             try {
-                // Get original ProcessingEnvironment from Gradle-wrapped one or KAPT-wrapped one.
-                // In Kapt, its field is called "delegate". In Gradle's, it's called "processingEnv"
-                processingEnv.javaClass.declaredFields.mapNotNull { field ->
+                processingEnv.javaClass.declaredFields.firstNotNullOfOrNull { field ->
                     if (field.name == "delegate" || field.name == "processingEnv") {
                         field.isAccessible = true
                         val javacEnv = field[processingEnv] as ProcessingEnvironment
@@ -42,7 +40,7 @@ class JavacResourceScanner(
                     } else {
                         null
                     }
-                }.firstOrNull()
+                }
             } catch (ignored2: Throwable) {
                 null
             }
@@ -104,11 +102,8 @@ class JavacResourceScanner(
         }
 
         private fun parseResourceSymbol(symbol: VarSymbol) {
-            // eg com.airbnb.paris.R
             val rClass = symbol.enclosingElement.enclosingElement.enclClass().className()
-            // eg styleable
             val rTypeClass = symbol.enclosingElement.simpleName.toString()
-            // eg View_background
             val resourceName = symbol.simpleName.toString()
             val value = symbol.constantValue as? Int ?: return
             val androidResourceId =

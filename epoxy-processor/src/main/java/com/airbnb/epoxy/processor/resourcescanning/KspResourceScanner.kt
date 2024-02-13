@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression
 import org.jetbrains.kotlin.psi.ValueArgument
+import java.util.Locale
 import java.util.regex.PatternSyntaxException
 import kotlin.reflect.KClass
 
@@ -462,7 +463,11 @@ inline fun <reified U> Any.getFieldWithReflection(fieldName: String): U {
     } catch (e: NoSuchFieldException) {
         // Kotlin sometimes does not have a field backing a property, so we try a getter method
         // for it.
-        val method = this.javaClass.getMethod("get${fieldName.capitalize()}")
+        val method = this.javaClass.getMethod("get${fieldName.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.ROOT
+            ) else it.toString()
+        }}")
         method.isAccessible = true
         method.invoke(this)
     }
@@ -470,7 +475,6 @@ inline fun <reified U> Any.getFieldWithReflection(fieldName: String): U {
     check(value is U) {
         "Expected field '$fieldName' to be ${U::class.java.simpleName} but got a ${value.javaClass.simpleName}"
     }
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     return value
 }
 
